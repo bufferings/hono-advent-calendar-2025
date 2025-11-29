@@ -1,0 +1,27 @@
+{
+  "name": "@app/web",
+  "exports": "./src/main.tsx",
+  "tasks": {
+    "dev": "deno run -A --node-modules-dir npm:vite",
+    "build": "deno run -A --node-modules-dir npm:vite build",
+    "preview": "deno run -A --node-modules-dir npm:vite preview"
+  },
+  "imports": {
+    "react": "npm:react@^18.3.1",
+    "react-dom": "npm:react-dom@^18.3.1",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
+    "vite": "npm:vite@^6.0.1",
+    "@tanstack/react-query": "npm:@tanstack/react-query@^5.62.0",
+    "react-router-dom": "npm:react-router-dom@^7.0.1",
+    "tailwindcss": "npm:tailwindcss@^3.4.15",
+    "autoprefixer": "npm:autoprefixer@^10.4.20",
+    "postcss": "npm:postcss@^8.4.49",
+    "clsx": "npm:clsx@^2.1.1",
+    "tailwind-merge": "npm:tailwind-merge@^2.5.5"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  }
+}
+

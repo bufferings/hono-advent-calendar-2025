@@ -1,0 +1,17 @@
+{
+  "workspace": [
+    "./apps/api",
+    "./apps/poller",
+    "./apps/sse-server",
+    "./apps/web"
+  ],
+  "tasks": {
+    "dev": "deno run -A npm:concurrently \"deno task dev:api\" \"deno task dev:sse\" \"deno task dev:poller\" \"deno task dev:web\"",
+    "dev:api": "deno task --filter @app/api dev",
+    "dev:sse": "deno task --filter @app/sse-server dev",
+    "dev:poller": "deno task --filter @app/poller dev",
+    "dev:web": "deno task --filter @app/web dev"
+  },
+  "nodeModulesDir": "auto"
+}
+
