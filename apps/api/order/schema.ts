@@ -3,14 +3,14 @@ import { z } from "@hono/zod-openapi";
 // Order Schema
 export const OrderSchema = z
   .object({
-    id: z.string().uuid(),
+    id: z.uuidv4(),
     orderNumber: z.number().int(),
     tableNumber: z.number().int(),
     itemName: z.string(),
     quantity: z.number().int(),
     status: z.enum(["ordered", "cooking", "delivered"]),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
   })
   .openapi("Order");
 export type Order = z.infer<typeof OrderSchema>;
@@ -41,10 +41,7 @@ export const OkResponseSchema = z
 // Path Parameters
 export const OrderIdParamSchema = z
   .object({
-    id: z
-      .string()
-      .uuid()
-      .openapi({ param: { name: "id", in: "path" } }),
+    id: z.uuidv4().openapi({ param: { name: "id", in: "path" } }),
   })
   .openapi("OrderIdParam");
 
@@ -57,7 +54,7 @@ export const OrderQuerySchema = z.object({
 // Event Schemas (内部用)
 export const OrderEventSchema = z.object({
   type: z.enum(["order.created", "order.cookingStarted", "order.delivered"]),
-  orderId: z.string().uuid(),
+  orderId: z.uuidv4(),
   tableNumber: z.number().int(),
 });
 export type OrderEvent = z.infer<typeof OrderEventSchema>;

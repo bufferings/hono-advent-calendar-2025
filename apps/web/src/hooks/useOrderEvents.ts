@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getGetApiOrdersQueryKey } from "../api/generated";
+import { getGetApiOrdersQueryKey } from "../api/generated.ts";
 
 const SSE_URL = (import.meta.env as ImportMetaEnv).VITE_SSE_URL ??
   "http://localhost:3001";

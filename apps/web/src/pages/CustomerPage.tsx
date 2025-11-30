@@ -4,7 +4,7 @@ import {
   type Order,
   useGetApiOrders,
   usePostApiOrders,
-} from "../api/generated";
+} from "../api/generated.ts";
 import { useOrderEvents } from "../hooks/useOrderEvents.ts";
 import { clsx } from "clsx";
 

@@ -5,7 +5,7 @@ import {
   useGetApiOrders,
   usePutApiOrdersIdDeliver,
   usePutApiOrdersIdStart,
-} from "../api/generated";
+} from "../api/generated.ts";
 import { useOrderEvents } from "../hooks/useOrderEvents.ts";
 
 export default function KitchenPage() {
