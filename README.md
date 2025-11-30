@@ -149,8 +149,7 @@ orval を使用し、OpenAPI スキーマから React Query 用のフックを�
 
 ### コードフォーマット
 
-- **保存時**: VSCode + Deno 拡張で `deno fmt` が自動実行
-- **コミット時**: lefthook で pre-commit フックとして `deno fmt` が実行
+lefthook で pre-commit フックとして `deno fmt` が実行される。
 
 ## ライセンス
 
