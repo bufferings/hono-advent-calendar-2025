@@ -109,13 +109,14 @@ http://localhost:5173/kitchen
 
 ## コマンド一覧
 
-| コマンド                                   | 説明                       |
-| ------------------------------------------ | -------------------------- |
-| `deno task dev`                            | 全アプリを起動             |
-| `deno task kill`                           | 使用中のポートを解放       |
-| `deno task --filter @app/api migrate`      | マイグレーション実行       |
-| `deno task --filter @app/api migrate:down` | マイグレーション巻き戻し   |
-| `deno task --filter @app/api seed`         | データリセット＋初期データ |
+| コマンド                                   | 説明                          |
+| ------------------------------------------ | ----------------------------- |
+| `deno task dev`                            | 全アプリを起動                |
+| `deno task kill`                           | 使用中のポートを解放          |
+| `deno task --filter @app/api migrate`      | マイグレーション実行          |
+| `deno task --filter @app/api migrate:down` | マイグレーション巻き戻し      |
+| `deno task --filter @app/api seed`         | データリセット＋初期データ    |
+| `deno task --filter @app/web generate`     | API クライアント生成（orval） |
 
 ## 設計ポイント
 
@@ -138,6 +139,16 @@ http://localhost:5173/kitchen
 
 各アプリ（api, poller, sse-server,
 web）は独立しており、パッケージ共有なし。シンプルさを優先。
+
+### API クライアント自動生成
+
+orval を使用し、OpenAPI スキーマから React Query 用のフックを自動生成。API
+サーバー起動中に `deno task --filter @app/web generate` で再生成可能。
+
+### コードフォーマット
+
+- **保存時**: VSCode + Deno 拡張で `deno fmt` が自動実行
+- **コミット時**: lefthook で pre-commit フックとして `deno fmt` が実行
 
 ## ライセンス
 
