@@ -8,7 +8,7 @@ import { clsx } from "clsx";
 export default function CustomerPage() {
   const [searchParams] = useSearchParams();
   const tableNumber = parseInt(searchParams.get("table") || "1", 10);
-  
+
   const [itemName, setItemName] = useState("まぐろ");
   const [quantity, setQuantity] = useState(1);
 
@@ -38,7 +38,9 @@ export default function CustomerPage() {
         <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
           <h1 className="text-xl font-bold">🍣 テーブル {tableNumber}</h1>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-blue-800 px-2 py-1 rounded">リアルタイム: ●</span>
+            <span className="text-xs bg-blue-800 px-2 py-1 rounded">
+              リアルタイム: ●
+            </span>
           </div>
         </div>
 
@@ -64,7 +66,9 @@ export default function CustomerPage() {
                 onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
               >
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <option key={n} value={n}>{n}</option>
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
                 ))}
               </select>
             </div>
@@ -82,22 +86,37 @@ export default function CustomerPage() {
         <div className="p-4">
           <h2 className="font-bold mb-2">ご注文状況</h2>
           <div className="space-y-2">
-            {orders.length === 0 && <p className="text-gray-500 text-sm">まだ注文がありません。</p>}
+            {orders.length === 0 && (
+              <p className="text-gray-500 text-sm">まだ注文がありません。</p>
+            )}
             {orders.map((order) => (
-              <div key={order.id} className="border rounded p-3 flex justify-between items-center">
+              <div
+                key={order.id}
+                className="border rounded p-3 flex justify-between items-center"
+              >
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-600">#{order.orderNumber}</span>
+                    <span className="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-600">
+                      #{order.orderNumber}
+                    </span>
                   </div>
-                  <div className="font-bold text-lg">{order.itemName} ×{order.quantity}</div>
-                  <div className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleTimeString()}</div>
+                  <div className="font-bold text-lg">
+                    {order.itemName} ×{order.quantity}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {new Date(order.createdAt).toLocaleTimeString()}
+                  </div>
                 </div>
-                <div className={clsx(
-                  "font-bold text-sm px-3 py-1 rounded",
-                  order.status === "ordered" && "bg-gray-200 text-gray-700",
-                  order.status === "cooking" && "bg-orange-100 text-orange-700 animate-pulse",
-                  order.status === "delivered" && "bg-green-100 text-green-700"
-                )}>
+                <div
+                  className={clsx(
+                    "font-bold text-sm px-3 py-1 rounded",
+                    order.status === "ordered" && "bg-gray-200 text-gray-700",
+                    order.status === "cooking" &&
+                      "bg-orange-100 text-orange-700 animate-pulse",
+                    order.status === "delivered" &&
+                      "bg-green-100 text-green-700"
+                  )}
+                >
                   {order.status === "ordered" && "📝 注文受付"}
                   {order.status === "cooking" && "🔥 調理中..."}
                   {order.status === "delivered" && "✅ お届け完了！"}

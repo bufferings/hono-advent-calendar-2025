@@ -2,7 +2,10 @@ import type { Kysely } from "kysely";
 import type { Database } from "../db/types.ts";
 import type { CreateOrderRequest } from "./schema.ts";
 
-export async function createOrder(db: Kysely<Database>, input: CreateOrderRequest) {
+export async function createOrder(
+  db: Kysely<Database>,
+  input: CreateOrderRequest
+) {
   return await db.transaction().execute(async (trx) => {
     // 1. orders に挿入
     const order = await trx
@@ -33,4 +36,3 @@ export async function createOrder(db: Kysely<Database>, input: CreateOrderReques
     return order;
   });
 }
-

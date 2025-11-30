@@ -12,19 +12,19 @@
 
 ### 1.2 使用技術
 
-| カテゴリ | 技術 |
-|---------|------|
-| ランタイム | Deno |
-| バックエンド | Hono (TypeScript) |
-| DB アクセス | Kysely + PostgreSQL |
-| バリデーション / スキーマ定義 | Zod (@hono/zod-openapi) |
-| API ドキュメント | OpenAPI（@hono/zod-openapi） |
-| メッセージバス | NATS |
-| ストリーミング | SSE (Server-Sent Events) |
-| フロントエンド | React (Vite) |
-| モノレポ管理 | Deno workspaces |
-| 開発環境管理 | mise |
-| インフラ | Docker Compose |
+| カテゴリ                      | 技術                         |
+| ----------------------------- | ---------------------------- |
+| ランタイム                    | Deno                         |
+| バックエンド                  | Hono (TypeScript)            |
+| DB アクセス                   | Kysely + PostgreSQL          |
+| バリデーション / スキーマ定義 | Zod (@hono/zod-openapi)      |
+| API ドキュメント              | OpenAPI（@hono/zod-openapi） |
+| メッセージバス                | NATS                         |
+| ストリーミング                | SSE (Server-Sent Events)     |
+| フロントエンド                | React (Vite)                 |
+| モノレポ管理                  | Deno workspaces              |
+| 開発環境管理                  | mise                         |
+| インフラ                      | Docker Compose               |
 
 ### 1.3 モノレポ構成
 
@@ -46,22 +46,23 @@ hono-advent-calendar-2025/
 └── mise.toml          # mise 設定
 ```
 
-**設計方針:** 
+**設計方針:**
+
 - 各アプリは独立。共有パッケージは作らず、必要な型は各アプリで定義する。
-- イベント型（5行程度）は api, poller, sse-server で重複して定義。サンプルの規模では許容範囲。
+- イベント型（5 行程度）は api, poller, sse-server で重複して定義。サンプルの規模では許容範囲。
 - 大規模システムでは共有パッケージやスキーマレジストリを検討。
 
 ---
 
 ## 2. 用語
 
-| 用語 | 説明 |
-|------|------|
-| **注文（Order）** | 客が注文した寿司。テーブル番号、商品名、数量、ステータスを持つ |
-| **厨房画面** | 厨房スタッフが新規注文を確認し、調理開始・配膳完了を操作する画面 |
-| **客の画面** | 客が注文を行い、注文状況を確認する画面 |
-| **Poller** | `event_outbox` テーブルから未送信のイベントを取得し、NATS へ publish するコンポーネント |
-| **SSE サーバ** | NATS を subscribe し、受け取ったイベントを SSE でブラウザへ送信する Hono エンドポイント |
+| 用語              | 説明                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| **注文（Order）** | 客が注文した寿司。テーブル番号、商品名、数量、ステータスを持つ                          |
+| **厨房画面**      | 厨房スタッフが新規注文を確認し、調理開始・配膳完了を操作する画面                        |
+| **客の画面**      | 客が注文を行い、注文状況を確認する画面                                                  |
+| **Poller**        | `event_outbox` テーブルから未送信のイベントを取得し、NATS へ publish するコンポーネント |
+| **SSE サーバ**    | NATS を subscribe し、受け取ったイベントを SSE でブラウザへ送信する Hono エンドポイント |
 
 ---
 
@@ -69,19 +70,19 @@ hono-advent-calendar-2025/
 
 ### 3.1 デモシナリオ
 
-**ブラウザでタブを2つ開いてデモ:**
+**ブラウザでタブを 2 つ開いてデモ:**
 
 ```
 タブ1: http://localhost:5173/customer?table=5  (客の画面)
 タブ2: http://localhost:5173/kitchen           (厨房の画面)
 ```
 
-1. タブ1（客）で「まぐろ ×2」を注文
-2. タブ2（厨房）にリアルタイムで注文が表示される
+1. タブ 1（客）で「まぐろ ×2」を注文
+2. タブ 2（厨房）にリアルタイムで注文が表示される
 3. 厨房が「調理開始」をクリック
-4. タブ1（客）で「調理中...」に更新される
+4. タブ 1（客）で「調理中...」に更新される
 5. 厨房が「配膳完了」をクリック
-6. タブ1（客）で「お届け完了！」に更新される
+6. タブ 1（客）で「お届け完了！」に更新される
 
 ### 3.2 処理フロー
 
@@ -179,14 +180,14 @@ hono-advent-calendar-2025/
 
 ### 4.2 各コンポーネントの役割
 
-| コンポーネント | 役割 |
-|---------------|------|
-| **Hono API サーバ** | REST API 提供、注文の作成・更新、イベント記録 |
-| **Poller** | `event_outbox` をポーリングし、NATS へイベントを publish |
-| **NATS サーバ** | メッセージバス。トピック: `order.events` |
-| **Hono SSE サーバ** | `/events` SSE エンドポイント。NATS subscribe → SSE push |
-| **客の画面** | 注文フォーム、注文状況のリアルタイム表示 |
-| **厨房の画面** | 新規注文一覧、調理開始・配膳完了の操作 |
+| コンポーネント      | 役割                                                     |
+| ------------------- | -------------------------------------------------------- |
+| **Hono API サーバ** | REST API 提供、注文の作成・更新、イベント記録            |
+| **Poller**          | `event_outbox` をポーリングし、NATS へイベントを publish |
+| **NATS サーバ**     | メッセージバス。トピック: `order.events`                 |
+| **Hono SSE サーバ** | `/events` SSE エンドポイント。NATS subscribe → SSE push  |
+| **客の画面**        | 注文フォーム、注文状況のリアルタイム表示                 |
+| **厨房の画面**      | 新規注文一覧、調理開始・配膳完了の操作                   |
 
 ---
 
@@ -196,19 +197,19 @@ hono-advent-calendar-2025/
 
 - **DB は snake_case**: PostgreSQL の標準に従う
 - **TypeScript は camelCase**: Kysely の `CamelCasePlugin` で自動変換
-- **シンプル**: 注文は1レコード1商品（OrderItem テーブルは作らない）
+- **シンプル**: 注文は 1 レコード 1 商品（OrderItem テーブルは作らない）
 
 ### 5.2 `orders` テーブル
 
-| カラム名 | 型 | 説明 |
-|---------|-----|------|
-| id | UUID | 注文 ID（主キー） |
-| table_number | INTEGER | テーブル番号 |
-| item_name | TEXT | 商品名（例: まぐろ） |
-| quantity | INTEGER | 数量 |
-| status | TEXT | ステータス (`ordered` / `cooking` / `delivered`) |
-| created_at | TIMESTAMPTZ | 注文日時 |
-| updated_at | TIMESTAMPTZ | 更新日時 |
+| カラム名     | 型          | 説明                                             |
+| ------------ | ----------- | ------------------------------------------------ |
+| id           | UUID        | 注文 ID（主キー）                                |
+| table_number | INTEGER     | テーブル番号                                     |
+| item_name    | TEXT        | 商品名（例: まぐろ）                             |
+| quantity     | INTEGER     | 数量                                             |
+| status       | TEXT        | ステータス (`ordered` / `cooking` / `delivered`) |
+| created_at   | TIMESTAMPTZ | 注文日時                                         |
+| updated_at   | TIMESTAMPTZ | 更新日時                                         |
 
 ```sql
 CREATE TABLE orders (
@@ -228,14 +229,14 @@ CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
 
 ### 5.3 `event_outbox` テーブル
 
-| カラム名 | 型 | 説明 |
-|---------|-----|------|
-| id | BIGSERIAL | イベント ID（主キー） |
-| type | TEXT | イベント種別 |
-| aggregate_id | UUID | 集約 ID（注文 ID） |
-| payload | JSONB | イベントペイロード |
-| processed | BOOLEAN | 送信済みフラグ |
-| created_at | TIMESTAMPTZ | イベント発生日時 |
+| カラム名     | 型          | 説明                  |
+| ------------ | ----------- | --------------------- |
+| id           | BIGSERIAL   | イベント ID（主キー） |
+| type         | TEXT        | イベント種別          |
+| aggregate_id | UUID        | 集約 ID（注文 ID）    |
+| payload      | JSONB       | イベントペイロード    |
+| processed    | BOOLEAN     | 送信済みフラグ        |
+| created_at   | TIMESTAMPTZ | イベント発生日時      |
 
 ```sql
 CREATE TABLE event_outbox (
@@ -282,7 +283,7 @@ export interface EventOutboxTable {
 // Database 型
 export interface Database {
   orders: OrderTable;
-  eventOutbox: EventOutboxTable;  // DB: event_outbox
+  eventOutbox: EventOutboxTable; // DB: event_outbox
 }
 ```
 
@@ -292,11 +293,11 @@ export interface Database {
 
 ### 6.1 イベント種別
 
-| イベント | 説明 | トリガー |
-|---------|------|---------|
-| `order.created` | 注文が作成された | 客が注文 |
+| イベント               | 説明             | トリガー           |
+| ---------------------- | ---------------- | ------------------ |
+| `order.created`        | 注文が作成された | 客が注文           |
 | `order.cookingStarted` | 調理が開始された | 厨房が「調理開始」 |
-| `order.delivered` | 配膳が完了した | 厨房が「配膳完了」 |
+| `order.delivered`      | 配膳が完了した   | 厨房が「配膳完了」 |
 
 ### 6.2 イベント payload
 
@@ -387,6 +388,7 @@ export interface Database {
 注文作成（客が注文）
 
 **リクエストボディ:**
+
 ```json
 {
   "tableNumber": 5,
@@ -396,10 +398,12 @@ export interface Database {
 ```
 
 **処理:**
+
 1. `orders` テーブルに挿入（status = ordered）
 2. `event_outbox` に `order.created` を記録
 
 **レスポンス:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -423,6 +427,7 @@ export interface Database {
 | tableNumber | number | No | テーブル番号でフィルタ |
 
 **レスポンス:**
+
 ```json
 {
   "orders": [
@@ -444,10 +449,12 @@ export interface Database {
 調理開始（厨房が操作）
 
 **処理:**
+
 1. `orders` を更新（status = cooking）
 2. `event_outbox` に `order.cookingStarted` を記録
 
 **レスポンス:**
+
 ```json
 {
   "ok": true
@@ -459,10 +466,12 @@ export interface Database {
 配膳完了（厨房が操作）
 
 **処理:**
+
 1. `orders` を更新（status = delivered）
 2. `event_outbox` に `order.delivered` を記録
 
 **レスポンス:**
+
 ```json
 {
   "ok": true
@@ -509,12 +518,12 @@ apps/api/
 
 ### 責務
 
-| 層 | 責務 |
-|---|------|
-| **handlers/** | HTTP リクエスト/レスポンス処理 |
-| **order/** | ビジネスロジック（Command）、トランザクション管理 |
-| **dao/** | 読み取り専用クエリ |
-| **db/** | DB 接続、型定義、マイグレーション |
+| 層            | 責務                                              |
+| ------------- | ------------------------------------------------- |
+| **handlers/** | HTTP リクエスト/レスポンス処理                    |
+| **order/**    | ビジネスロジック（Command）、トランザクション管理 |
+| **dao/**      | 読み取り専用クエリ                                |
+| **db/**       | DB 接続、型定義、マイグレーション                 |
 
 ---
 
@@ -538,7 +547,7 @@ apps/poller/
 
 ### 9.2 ポーリング間隔
 
-- サンプル: 1秒（リアルタイム性重視）
+- サンプル: 1 秒（リアルタイム性重視）
 
 ---
 
@@ -561,10 +570,11 @@ apps/sse-server/
 | tableNumber | number | No | 指定したテーブルのイベントのみ受け取る |
 
 **振る舞い:**
+
 1. クライアントが接続したら NATS の `order.events` を subscribe
 2. tableNumber が指定されていれば、そのテーブルのイベントのみフィルタ
 3. 受信したイベントを SSE として送信
-4. 30秒間隔で keep-alive を送信
+4. 30 秒間隔で keep-alive を送信
 
 ### 10.2 SSE メッセージ形式
 
@@ -657,19 +667,19 @@ export function useOrderEvents(tableNumber?: number) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const url = tableNumber 
+    const url = tableNumber
       ? `http://localhost:3001/events?tableNumber=${tableNumber}`
-      : 'http://localhost:3001/events';
-    
+      : "http://localhost:3001/events";
+
     const source = new EventSource(url);
-    
+
     source.onmessage = (e) => {
       const event = JSON.parse(e.data);
-      
+
       // キャッシュを無効化 → 自動で再取得
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     };
-    
+
     return () => source.close();
   }, [queryClient, tableNumber]);
 }
@@ -681,10 +691,10 @@ export function useOrderEvents(tableNumber?: number) {
 
 ### 12.1 サービス一覧
 
-| サービス | ポート | 説明 |
-|---------|--------|------|
-| postgres | 5432 | PostgreSQL データベース |
-| nats | 4222 | NATS メッセージバス |
+| サービス | ポート | 説明                    |
+| -------- | ------ | ----------------------- |
+| postgres | 5432   | PostgreSQL データベース |
+| nats     | 4222   | NATS メッセージバス     |
 
 **アプリ（api, sse-server, poller, web）は Deno で直接起動。**
 
@@ -745,13 +755,13 @@ deno task dev
 
 ### 13.3 起動後のポート
 
-| サービス | ポート | 起動方法 |
-|---------|--------|---------|
-| PostgreSQL | 5432 | Docker |
-| NATS | 4222 | Docker |
-| API サーバ | 3000 | Deno |
-| SSE サーバ | 3001 | Deno |
-| Web (Vite) | 5173 | Deno |
+| サービス   | ポート | 起動方法 |
+| ---------- | ------ | -------- |
+| PostgreSQL | 5432   | Docker   |
+| NATS       | 4222   | Docker   |
+| API サーバ | 3000   | Deno     |
+| SSE サーバ | 3001   | Deno     |
+| Web (Vite) | 5173   | Deno     |
 
 ### 13.4 ルート deno.json
 
@@ -782,4 +792,3 @@ deno task dev
 3. **調理優先度**: 注文順 or 商品種類で優先度を設定
 4. **複数厨房対応**: 寿司担当、揚げ物担当などに分ける
 5. **レーン配膳**: 直接配膳 vs レーン配膳の選択
-

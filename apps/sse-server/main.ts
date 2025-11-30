@@ -1,9 +1,35 @@
-import { Hono } from "@hono/hono";
-import { cors } from "@hono/hono/cors";
-import { connect, StringCodec } from "nats";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { streamSSE } from "hono/streaming";
+import { connect, type NatsConnection, StringCodec } from "nats";
 import type { OrderEvent } from "./events.ts";
 
 const NATS_URL = Deno.env.get("NATS_URL") ?? "nats://localhost:4222";
+
+// NATS 接続をアプリ全体で共有
+let nc: NatsConnection | null = null;
+const sc = StringCodec();
+
+async function getNatsConnection(): Promise<NatsConnection> {
+  if (!nc || nc.isClosed()) {
+    console.log(`Connecting to NATS at ${NATS_URL}...`);
+    nc = await connect({ servers: NATS_URL });
+    console.log("NATS connected.");
+  }
+  return nc;
+}
+
+async function shutdown() {
+  console.log("Shutting down...");
+  if (nc && !nc.isClosed()) {
+    await nc.drain();
+    console.log("NATS connection closed.");
+  }
+  Deno.exit(0);
+}
+
+Deno.addSignalListener("SIGINT", shutdown);
+Deno.addSignalListener("SIGTERM", shutdown);
 
 const app = new Hono();
 
@@ -20,71 +46,50 @@ app.get("/events", (c) => {
   const tableNumberStr = c.req.query("tableNumber");
   const tableNumber = tableNumberStr ? parseInt(tableNumberStr, 10) : undefined;
 
-  const body = new ReadableStream({
-    async start(controller) {
-      console.log(`Client connected. Table: ${tableNumber ?? "ALL"}`);
-      const encoder = new TextEncoder();
+  return streamSSE(c, async (stream) => {
+    const natsConn = await getNatsConnection();
+    const sub = natsConn.subscribe("order.events");
 
-      // Connect to NATS
-      const nc = await connect({ servers: NATS_URL });
-      const sc = StringCodec();
-      const sub = nc.subscribe("order.events");
+    console.log(`Client connected. Table: ${tableNumber ?? "ALL"}`);
 
-      // Keep-alive timer
-      const intervalId = setInterval(() => {
-        try {
-          controller.enqueue(encoder.encode(": keepalive\n\n"));
-        } catch {
-          // Controller might be closed
-          clearInterval(intervalId);
+    let aborted = false;
+
+    // Keep-alive timer (SSE コメントで接続維持)
+    const intervalId = setInterval(async () => {
+      if (aborted) return;
+      try {
+        await stream.write(": keepalive\n\n");
+      } catch {
+        // Stream might be closed
+      }
+    }, 30000);
+
+    // Cleanup on abort
+    stream.onAbort(() => {
+      console.log(`Client disconnected. Table: ${tableNumber ?? "ALL"}`);
+      aborted = true;
+      clearInterval(intervalId);
+      sub.unsubscribe();
+    });
+
+    // Process NATS messages
+    for await (const msg of sub) {
+      if (aborted) break;
+
+      try {
+        const dataStr = sc.decode(msg.data);
+        const event = JSON.parse(dataStr) as OrderEvent;
+
+        // Filter by tableNumber
+        if (tableNumber !== undefined && event.tableNumber !== tableNumber) {
+          continue;
         }
-      }, 30000);
 
-      // Process NATS messages
-      (async () => {
-        try {
-          for await (const msg of sub) {
-            try {
-              const dataStr = sc.decode(msg.data);
-              const event = JSON.parse(dataStr) as OrderEvent;
-
-              // Filter
-              if (tableNumber !== undefined && event.tableNumber !== tableNumber) {
-                continue;
-              }
-
-              controller.enqueue(encoder.encode(`data: ${dataStr}\n\n`));
-            } catch (e) {
-              console.error("Error processing message", e);
-            }
-          }
-        } catch (err) {
-          console.error("NATS subscription error:", err);
-        }
-      })();
-
-      // Cleanup when stream is cancelled (client disconnects)
-      // Note: ReadableStream's cancel is called when the client disconnects
-      // BUT, Deno's serve might not trigger cancel immediately in all cases,
-      // but typically it works.
-      return async () => {
-        console.log("Client disconnected");
-        clearInterval(intervalId);
-        await sub.unsubscribe();
-        await nc.close();
-      };
-    },
-    cancel() {
-      console.log("Stream cancelled");
-    },
-  });
-
-  return c.newResponse(body, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
-    },
+        await stream.writeSSE({ data: dataStr });
+      } catch (e) {
+        console.error("Error processing message:", e);
+      }
+    }
   });
 });
 

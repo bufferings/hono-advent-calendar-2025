@@ -3,4 +3,3 @@ export type OrderEvent = {
   orderId: string;
   tableNumber: number;
 };
-

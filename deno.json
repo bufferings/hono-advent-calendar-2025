@@ -10,8 +10,8 @@
     "dev:api": "deno task --filter @app/api dev",
     "dev:sse": "deno task --filter @app/sse-server dev",
     "dev:poller": "deno task --filter @app/poller dev",
-    "dev:web": "deno task --filter @app/web dev"
+    "dev:web": "deno task --filter @app/web dev",
+    "kill": "(lsof -ti :3000 -ti :3001 -ti :5173 | xargs kill -9 2>/dev/null) || echo 'No processes to kill'"
   },
   "nodeModulesDir": "auto"
 }
-

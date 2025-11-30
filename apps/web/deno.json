@@ -7,21 +7,23 @@
     "preview": "deno run -A --node-modules-dir npm:vite preview"
   },
   "imports": {
-    "react": "npm:react@^18.3.1",
-    "react-dom": "npm:react-dom@^18.3.1",
-    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
-    "vite": "npm:vite@^6.0.1",
-    "@tanstack/react-query": "npm:@tanstack/react-query@^5.62.0",
-    "react-router-dom": "npm:react-router-dom@^7.0.1",
-    "tailwindcss": "npm:tailwindcss@^3.4.15",
-    "autoprefixer": "npm:autoprefixer@^10.4.20",
-    "postcss": "npm:postcss@^8.4.49",
-    "clsx": "npm:clsx@^2.1.1",
-    "tailwind-merge": "npm:tailwind-merge@^2.5.5"
+    "react": "npm:react@19.2.0",
+    "react-dom": "npm:react-dom@19.2.0",
+    "@types/react": "npm:@types/react@19.2.7",
+    "@types/react-dom": "npm:@types/react-dom@19.2.3",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@5.1.1",
+    "vite": "npm:vite@7.2.4",
+    "@tanstack/react-query": "npm:@tanstack/react-query@5.90.11",
+    "react-router-dom": "npm:react-router-dom@7.9.6",
+    "tailwindcss": "npm:tailwindcss@4.1.17",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@4.1.17",
+    "clsx": "npm:clsx@2.1.1",
+    "zod": "npm:zod@4.1.13"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client"]
   }
 }
-

@@ -26,7 +26,7 @@ Hono Advent Calendar 2025 用のサンプルアプリケーション。
 ┌──────────────────────────────────┐
 │          SSE Server              │◄──── NATS Subscribe
 └──────────────────────────────────┘
-                                    
+
 ┌──────────────────────────────────┐
 │           API Server             │
 │  ┌─────────┐  ┌───────────────┐  │
@@ -82,7 +82,9 @@ deno task dev
 ```
 
 以下が起動します:
+
 - **API Server**: http://localhost:3000
+- **Swagger UI**: http://localhost:3000/ui
 - **SSE Server**: http://localhost:3001
 - **Web (Frontend)**: http://localhost:5173
 - **Poller**: バックグラウンドで動作
@@ -107,12 +109,13 @@ http://localhost:5173/kitchen
 
 ## コマンド一覧
 
-| コマンド | 説明 |
-|---------|------|
-| `deno task dev` | 全アプリを起動 |
-| `deno task --filter @app/api migrate` | マイグレーション実行 |
-| `deno task --filter @app/api migrate:down` | マイグレーション巻き戻し |
-| `deno task --filter @app/api seed` | データリセット＋初期データ |
+| コマンド                                   | 説明                       |
+| ------------------------------------------ | -------------------------- |
+| `deno task dev`                            | 全アプリを起動             |
+| `deno task kill`                           | 使用中のポートを解放       |
+| `deno task --filter @app/api migrate`      | マイグレーション実行       |
+| `deno task --filter @app/api migrate:down` | マイグレーション巻き戻し   |
+| `deno task --filter @app/api seed`         | データリセット＋初期データ |
 
 ## 設計ポイント
 
@@ -124,6 +127,10 @@ http://localhost:5173/kitchen
 
 - **Command**: ドメインユースケース（注文作成、調理開始、配膳完了）
 - **Query**: DAO による直接クエリ（注文一覧取得）
+
+### OpenAPI / Swagger UI
+
+`@hono/zod-openapi` を使用し、Zod スキーマから OpenAPI ドキュメントを自動生成。http://localhost:3000/ui で API を確認・テスト可能。
 
 ### モノレポ構成
 

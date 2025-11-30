@@ -1,27 +1,47 @@
-import { connect, StringCodec } from "nats";
+import { connect, type NatsConnection, StringCodec } from "nats";
 import { createDb } from "./db/client.ts";
+import type { Kysely } from "kysely";
+import type { Database } from "./db/types.ts";
 
 const NATS_URL = Deno.env.get("NATS_URL") ?? "nats://localhost:4222";
 const POLLING_INTERVAL = 1000; // 1 second
 
+let running = true;
+let nc: NatsConnection | null = null;
+let db: Kysely<Database> | null = null;
+
+async function shutdown() {
+  console.log("Shutting down...");
+  running = false;
+
+  if (nc) {
+    await nc.drain();
+    console.log("NATS connection closed.");
+  }
+
+  if (db) {
+    await db.destroy();
+    console.log("DB connection closed.");
+  }
+
+  Deno.exit(0);
+}
+
+Deno.addSignalListener("SIGINT", shutdown);
+Deno.addSignalListener("SIGTERM", shutdown);
+
 async function main() {
   console.log(`Connecting to NATS at ${NATS_URL}...`);
-  const nc = await connect({ servers: NATS_URL });
+  nc = await connect({ servers: NATS_URL });
   const sc = StringCodec();
-  const db = createDb();
+  db = createDb();
 
   console.log("Poller started.");
 
-  while (true) {
+  while (running) {
     try {
       await db.transaction().execute(async (trx) => {
         // 1. Fetch unprocessed events
-        // Using FOR UPDATE SKIP LOCKED for concurrency safety if multiple pollers were running
-        // Kysely doesn't have direct support for SKIP LOCKED in all dialects easily without raw sql or plugins,
-        // but for this sample with Postgres, we can use a simple query or raw sql.
-        // Since this is a sample and we likely have one poller, simple select is fine.
-        // But let's try to be correct.
-        
         const events = await trx
           .selectFrom("eventOutbox")
           .selectAll()
@@ -29,7 +49,6 @@ async function main() {
           .orderBy("id", "asc")
           .limit(100)
           .forUpdate()
-          .skipLocked()
           .execute();
 
         if (events.length === 0) return;
@@ -38,11 +57,10 @@ async function main() {
 
         for (const event of events) {
           const payloadStr = JSON.stringify(event.payload);
-          
+
           // 2. Publish to NATS
           // We publish to "order.events" subject
-          await nc.publish("order.events", sc.encode(payloadStr));
-          
+          nc!.publish("order.events", sc.encode(payloadStr));
           console.log(`Published event: ${event.type} (ID: ${event.id})`);
 
           // 3. Mark as processed
@@ -63,4 +81,3 @@ async function main() {
 }
 
 main();
-

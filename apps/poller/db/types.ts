@@ -12,4 +12,3 @@ export interface EventOutboxTable {
 export interface Database {
   eventOutbox: EventOutboxTable;
 }
-

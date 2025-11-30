@@ -1,4 +1,4 @@
-import { Kysely, sql } from "kysely";
+import { type Kysely, type SqlBool, sql } from "kysely";
 
 export async function up(db: Kysely<unknown>): Promise<void> {
   await db.schema
@@ -17,11 +17,10 @@ export async function up(db: Kysely<unknown>): Promise<void> {
     .createIndex("idx_event_outbox_unprocessed")
     .on("event_outbox")
     .column("id")
-    .where("processed", "=", false)
+    .where(sql<SqlBool>`processed = false`)
     .execute();
 }
 
 export async function down(db: Kysely<unknown>): Promise<void> {
   await db.schema.dropTable("event_outbox").execute();
 }
-

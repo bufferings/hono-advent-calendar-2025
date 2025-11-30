@@ -28,4 +28,3 @@ export async function startCooking(db: Kysely<Database>, id: string) {
     return order;
   });
 }
-

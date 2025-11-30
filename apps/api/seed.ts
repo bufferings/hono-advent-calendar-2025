@@ -1,7 +1,7 @@
-import { createDb } from "./db/client.ts";
+import { getDb, closeDb } from "./db/client.ts";
 
 async function seed() {
-  const db = createDb();
+  const db = getDb();
 
   console.log("Seeding...");
 
@@ -35,7 +35,7 @@ async function seed() {
     .execute();
 
   console.log("Seeding completed.");
-  await db.destroy();
+  await closeDb();
 }
 
 seed();

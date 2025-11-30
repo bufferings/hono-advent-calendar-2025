@@ -1,9 +1,9 @@
 import { FileMigrationProvider, Migrator } from "kysely";
 import * as path from "@std/path";
-import { createDb } from "./db/client.ts";
+import { getDb, closeDb } from "./db/client.ts";
 
 async function runMigrations() {
-  const db = createDb();
+  const db = getDb();
   const isDown = Deno.args.includes("--down");
 
   const migrator = new Migrator({
@@ -39,8 +39,7 @@ async function runMigrations() {
     if (error) throw error;
   }
 
-  await db.destroy();
+  await closeDb();
 }
 
 runMigrations();
-

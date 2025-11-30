@@ -1,18 +1,44 @@
-import { Hono } from "@hono/hono";
-import { createDb } from "../db/client.ts";
+import { createRoute, type RouteHandler } from "@hono/zod-openapi";
+import { getDb } from "../db/client.ts";
 import { createOrder as createOrderUseCase } from "../order/createOrder.ts";
-import { CreateOrderRequestSchema } from "../order/schema.ts";
+import { CreateOrderRequestSchema, OrderSchema } from "../order/schema.ts";
 
-export const createOrder = new Hono().post("/orders", async (c) => {
-  const body = await c.req.json();
-  const validated = CreateOrderRequestSchema.parse(body);
-  const db = createDb();
-
-  try {
-    const order = await createOrderUseCase(db, validated);
-    return c.json(order, 201);
-  } finally {
-    await db.destroy();
-  }
+export const createOrderRoute = createRoute({
+  method: "post",
+  path: "/orders",
+  tags: ["orders"],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: CreateOrderRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      content: {
+        "application/json": {
+          schema: OrderSchema,
+        },
+      },
+      description: "注文を作成しました",
+    },
+  },
 });
 
+export const createOrderHandler: RouteHandler<typeof createOrderRoute> = async (
+  c
+) => {
+  const body = c.req.valid("json");
+  const order = await createOrderUseCase(getDb(), body);
+  return c.json(
+    {
+      ...order,
+      createdAt: order.createdAt.toISOString(),
+      updatedAt: order.updatedAt.toISOString(),
+    },
+    201
+  );
+};

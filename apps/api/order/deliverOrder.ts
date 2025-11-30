@@ -28,4 +28,3 @@ export async function deliverOrder(db: Kysely<Database>, id: string) {
     return order;
   });
 }
-

@@ -1,16 +1,31 @@
-import { Hono } from "@hono/hono";
-import { createDb } from "../db/client.ts";
+import { createRoute, type RouteHandler } from "@hono/zod-openapi";
+import { getDb } from "../db/client.ts";
 import { startCooking as startCookingUseCase } from "../order/startCooking.ts";
+import { OkResponseSchema, OrderIdParamSchema } from "../order/schema.ts";
 
-export const startCooking = new Hono().put("/orders/:id/start", async (c) => {
-  const id = c.req.param("id");
-  const db = createDb();
-
-  try {
-    await startCookingUseCase(db, id);
-    return c.json({ ok: true });
-  } finally {
-    await db.destroy();
-  }
+export const startCookingRoute = createRoute({
+  method: "put",
+  path: "/orders/{id}/start",
+  tags: ["orders"],
+  request: {
+    params: OrderIdParamSchema,
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: OkResponseSchema,
+        },
+      },
+      description: "調理を開始しました",
+    },
+  },
 });
 
+export const startCookingHandler: RouteHandler<
+  typeof startCookingRoute
+> = async (c) => {
+  const { id } = c.req.valid("param");
+  await startCookingUseCase(getDb(), id);
+  return c.json({ ok: true });
+};

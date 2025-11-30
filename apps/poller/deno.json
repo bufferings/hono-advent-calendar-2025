@@ -5,9 +5,8 @@
     "dev": "deno run --watch --allow-net --allow-env main.ts"
   },
   "imports": {
-    "kysely": "npm:kysely@^0.27.5",
-    "pg": "npm:pg@^8.13.1",
-    "nats": "npm:nats@^2.28.2"
+    "kysely": "npm:kysely@0.28.8",
+    "pg": "npm:pg@8.16.3",
+    "nats": "npm:nats@2.29.3"
   }
 }
-
