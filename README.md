@@ -121,7 +121,8 @@ http://localhost:5173/kitchen
 
 ### Transactional Outbox パターン
 
-注文の状態更新とイベント記録を同一トランザクションで行い、Poller が非同期で NATS に配信。信頼性の高いイベント配信を実現。
+注文の状態更新とイベント記録を同一トランザクションで行い、Poller が非同期で NATS
+に配信。信頼性の高いイベント配信を実現。
 
 ### CQRS (Command Query Responsibility Segregation)
 
@@ -130,11 +131,13 @@ http://localhost:5173/kitchen
 
 ### OpenAPI / Swagger UI
 
-`@hono/zod-openapi` を使用し、Zod スキーマから OpenAPI ドキュメントを自動生成。http://localhost:3000/ui で API を確認・テスト可能。
+`@hono/zod-openapi` を使用し、Zod スキーマから OpenAPI
+ドキュメントを自動生成。http://localhost:3000/ui で API を確認・テスト可能。
 
 ### モノレポ構成
 
-各アプリ（api, poller, sse-server, web）は独立しており、パッケージ共有なし。シンプルさを優先。
+各アプリ（api, poller, sse-server,
+web）は独立しており、パッケージ共有なし。シンプルさを優先。
 
 ## ライセンス
 

@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { getGetApiOrdersQueryKey } from "../api/generated";
 
-const SSE_URL = import.meta.env.VITE_SSE_URL ?? "http://localhost:3001";
+const SSE_URL = (import.meta.env as ImportMetaEnv).VITE_SSE_URL ??
+  "http://localhost:3001";
 const RECONNECT_DELAY = 3000;
 
 export function useOrderEvents(tableNumber?: number) {
@@ -21,7 +23,7 @@ export function useOrderEvents(tableNumber?: number) {
 
       source.onmessage = (e) => {
         console.log("SSE Message:", e.data);
-        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        queryClient.invalidateQueries({ queryKey: getGetApiOrdersQueryKey() });
       };
 
       source.onerror = () => {

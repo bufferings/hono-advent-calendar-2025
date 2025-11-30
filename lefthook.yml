@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    fmt:
+      glob: "*.{ts,tsx,json,md}"
+      run: deno fmt {staged_files}
+      stage_fixed: true

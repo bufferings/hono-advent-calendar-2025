@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchOrders, createOrder } from "../api/client.ts";
+import {
+  type Order,
+  useGetApiOrders,
+  usePostApiOrders,
+} from "../api/generated";
 import { useOrderEvents } from "../hooks/useOrderEvents.ts";
 import { clsx } from "clsx";
 
@@ -16,19 +19,17 @@ export default function CustomerPage() {
   useOrderEvents(tableNumber);
 
   // Fetch Orders
-  const { data: orders = [] } = useQuery({
-    queryKey: ["orders", { tableNumber }],
-    queryFn: () => fetchOrders(undefined, tableNumber),
-  });
+  const { data } = useGetApiOrders({ tableNumber });
+  const orders = data?.orders ?? [];
 
   // Create Order Mutation
-  const createOrderMutation = useMutation({
-    mutationFn: () => createOrder(tableNumber, itemName, quantity),
-  });
+  const createOrderMutation = usePostApiOrders();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createOrderMutation.mutate();
+    createOrderMutation.mutate({
+      data: { tableNumber, itemName, quantity },
+    });
   };
 
   return (
@@ -89,42 +90,42 @@ export default function CustomerPage() {
             {orders.length === 0 && (
               <p className="text-gray-500 text-sm">まだ注文がありません。</p>
             )}
-            {orders.map((order) => (
-              <div
-                key={order.id}
-                className="border rounded p-3 flex justify-between items-center"
-              >
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-600">
-                      #{order.orderNumber}
-                    </span>
-                  </div>
-                  <div className="font-bold text-lg">
-                    {order.itemName} ×{order.quantity}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {new Date(order.createdAt).toLocaleTimeString()}
-                  </div>
-                </div>
-                <div
-                  className={clsx(
-                    "font-bold text-sm px-3 py-1 rounded",
-                    order.status === "ordered" && "bg-gray-200 text-gray-700",
-                    order.status === "cooking" &&
-                      "bg-orange-100 text-orange-700 animate-pulse",
-                    order.status === "delivered" &&
-                      "bg-green-100 text-green-700"
-                  )}
-                >
-                  {order.status === "ordered" && "📝 注文受付"}
-                  {order.status === "cooking" && "🔥 調理中..."}
-                  {order.status === "delivered" && "✅ お届け完了！"}
-                </div>
-              </div>
-            ))}
+            {orders.map((order) => <OrderItem key={order.id} order={order} />)}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function OrderItem({ order }: { order: Order }) {
+  return (
+    <div className="border rounded p-3 flex justify-between items-center">
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-600">
+            #{order.orderNumber}
+          </span>
+        </div>
+        <div className="font-bold text-lg">
+          {order.itemName} ×{order.quantity}
+        </div>
+        <div className="text-xs text-gray-400">
+          {new Date(order.createdAt).toLocaleTimeString()}
+        </div>
+      </div>
+      <div
+        className={clsx(
+          "font-bold text-sm px-3 py-1 rounded",
+          order.status === "ordered" && "bg-gray-200 text-gray-700",
+          order.status === "cooking" &&
+            "bg-orange-100 text-orange-700 animate-pulse",
+          order.status === "delivered" && "bg-green-100 text-green-700",
+        )}
+      >
+        {order.status === "ordered" && "📝 注文受付"}
+        {order.status === "cooking" && "🔥 調理中..."}
+        {order.status === "delivered" && "✅ お届け完了！"}
       </div>
     </div>
   );

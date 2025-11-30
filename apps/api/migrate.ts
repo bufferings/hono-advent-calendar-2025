@@ -1,6 +1,6 @@
 import { FileMigrationProvider, Migrator } from "kysely";
 import * as path from "@std/path";
-import { getDb, closeDb } from "./db/client.ts";
+import { closeDb, getDb } from "./db/client.ts";
 
 async function runMigrations() {
   const db = getDb();

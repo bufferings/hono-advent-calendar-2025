@@ -1,4 +1,4 @@
-import { type Kysely, type SqlBool, sql } from "kysely";
+import { type Kysely, sql, type SqlBool } from "kysely";
 
 export async function up(db: Kysely<unknown>): Promise<void> {
   await db.schema
@@ -8,8 +8,10 @@ export async function up(db: Kysely<unknown>): Promise<void> {
     .addColumn("aggregate_id", "uuid", (col) => col.notNull())
     .addColumn("payload", "jsonb", (col) => col.notNull())
     .addColumn("processed", "boolean", (col) => col.notNull().defaultTo(false))
-    .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull().defaultTo(sql`now()`)
+    .addColumn(
+      "created_at",
+      "timestamptz",
+      (col) => col.notNull().defaultTo(sql`now()`),
     )
     .execute();
 

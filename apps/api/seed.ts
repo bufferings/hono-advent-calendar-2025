@@ -1,4 +1,4 @@
-import { getDb, closeDb } from "./db/client.ts";
+import { closeDb, getDb } from "./db/client.ts";
 
 async function seed() {
   const db = getDb();

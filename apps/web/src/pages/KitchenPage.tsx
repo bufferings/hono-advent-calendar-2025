@@ -1,10 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  fetchOrders,
-  startCooking,
-  deliverOrder,
+  getGetApiOrdersQueryKey,
   type Order,
-} from "../api/client.ts";
+  useGetApiOrders,
+  usePutApiOrdersIdDeliver,
+  usePutApiOrdersIdStart,
+} from "../api/generated";
 import { useOrderEvents } from "../hooks/useOrderEvents.ts";
 
 export default function KitchenPage() {
@@ -14,20 +15,22 @@ export default function KitchenPage() {
   useOrderEvents();
 
   // Fetch Orders
-  const { data: orders = [] } = useQuery({
-    queryKey: ["orders"],
-    queryFn: () => fetchOrders(),
-  });
+  const { data } = useGetApiOrders();
+  const orders = data?.orders ?? [];
 
   // Mutations
-  const startCookingMutation = useMutation({
-    mutationFn: startCooking,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["orders"] }),
+  const startCookingMutation = usePutApiOrdersIdStart({
+    mutation: {
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: getGetApiOrdersQueryKey() }),
+    },
   });
 
-  const deliverOrderMutation = useMutation({
-    mutationFn: deliverOrder,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["orders"] }),
+  const deliverOrderMutation = usePutApiOrdersIdDeliver({
+    mutation: {
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: getGetApiOrdersQueryKey() }),
+    },
   });
 
   const orderedList = orders.filter((o) => o.status === "ordered");
@@ -61,7 +64,7 @@ export default function KitchenPage() {
                   key={order.id}
                   order={order}
                   actionLabel="調理開始"
-                  onAction={() => startCookingMutation.mutate(order.id)}
+                  onAction={() => startCookingMutation.mutate({ id: order.id })}
                   color="blue"
                 />
               ))}
@@ -85,7 +88,7 @@ export default function KitchenPage() {
                   key={order.id}
                   order={order}
                   actionLabel="配膳完了"
-                  onAction={() => deliverOrderMutation.mutate(order.id)}
+                  onAction={() => deliverOrderMutation.mutate({ id: order.id })}
                   color="green"
                 />
               ))}
@@ -108,10 +111,9 @@ function OrderCard({
   onAction: () => void;
   color: "blue" | "green";
 }) {
-  const colorClass =
-    color === "blue"
-      ? "bg-blue-600 hover:bg-blue-700"
-      : "bg-green-600 hover:bg-green-700";
+  const colorClass = color === "blue"
+    ? "bg-blue-600 hover:bg-blue-700"
+    : "bg-green-600 hover:bg-green-700";
 
   return (
     <div className="bg-gray-600 rounded p-3 flex justify-between items-center">

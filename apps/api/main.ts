@@ -3,17 +3,17 @@ import { cors } from "hono/cors";
 import { swaggerUI } from "@hono/swagger-ui";
 import { closeDb } from "./db/client.ts";
 import {
-  createOrderRoute,
   createOrderHandler,
+  createOrderRoute,
 } from "./handlers/createOrder.ts";
-import { getOrdersRoute, getOrdersHandler } from "./handlers/getOrders.ts";
+import { getOrdersHandler, getOrdersRoute } from "./handlers/getOrders.ts";
 import {
-  startCookingRoute,
   startCookingHandler,
+  startCookingRoute,
 } from "./handlers/startCooking.ts";
 import {
-  deliverOrderRoute,
   deliverOrderHandler,
+  deliverOrderRoute,
 } from "./handlers/deliverOrder.ts";
 
 const app = new OpenAPIHono();
@@ -24,7 +24,7 @@ app.use(
     origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type"],
-  })
+  }),
 );
 
 // API routes

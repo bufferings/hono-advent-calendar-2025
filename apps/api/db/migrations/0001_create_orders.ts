@@ -3,18 +3,24 @@ import { type Kysely, sql } from "kysely";
 export async function up(db: Kysely<unknown>): Promise<void> {
   await db.schema
     .createTable("orders")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`gen_random_uuid()`)
+    .addColumn(
+      "id",
+      "uuid",
+      (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`),
     )
     .addColumn("table_number", "integer", (col) => col.notNull())
     .addColumn("item_name", "text", (col) => col.notNull())
     .addColumn("quantity", "integer", (col) => col.notNull().defaultTo(1))
     .addColumn("status", "text", (col) => col.notNull().defaultTo("ordered"))
-    .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull().defaultTo(sql`now()`)
+    .addColumn(
+      "created_at",
+      "timestamptz",
+      (col) => col.notNull().defaultTo(sql`now()`),
     )
-    .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull().defaultTo(sql`now()`)
+    .addColumn(
+      "updated_at",
+      "timestamptz",
+      (col) => col.notNull().defaultTo(sql`now()`),
     )
     .execute();
 

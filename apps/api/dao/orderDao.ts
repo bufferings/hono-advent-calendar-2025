@@ -3,7 +3,7 @@ import type { Database, OrderStatus } from "../db/types.ts";
 
 export async function getOrders(
   db: Kysely<Database>,
-  filters: { status?: OrderStatus; tableNumber?: number }
+  filters: { status?: OrderStatus; tableNumber?: number },
 ) {
   let query = db.selectFrom("orders").selectAll().orderBy("createdAt", "desc");
 

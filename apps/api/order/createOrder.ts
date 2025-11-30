@@ -4,7 +4,7 @@ import type { CreateOrderRequest } from "./schema.ts";
 
 export async function createOrder(
   db: Kysely<Database>,
-  input: CreateOrderRequest
+  input: CreateOrderRequest,
 ) {
   return await db.transaction().execute(async (trx) => {
     // 1. orders に挿入

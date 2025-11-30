@@ -29,7 +29,7 @@ export const createOrderRoute = createRoute({
 });
 
 export const createOrderHandler: RouteHandler<typeof createOrderRoute> = async (
-  c
+  c,
 ) => {
   const body = c.req.valid("json");
   const order = await createOrderUseCase(getDb(), body);
@@ -39,6 +39,6 @@ export const createOrderHandler: RouteHandler<typeof createOrderRoute> = async (
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
     },
-    201
+    201,
   );
 };

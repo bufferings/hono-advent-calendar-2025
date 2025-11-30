@@ -23,7 +23,7 @@ export const getOrdersRoute = createRoute({
 });
 
 export const getOrdersHandler: RouteHandler<typeof getOrdersRoute> = async (
-  c
+  c,
 ) => {
   const { status, tableNumber } = c.req.valid("query");
   const orders = await getOrdersDao(getDb(), { status, tableNumber });
