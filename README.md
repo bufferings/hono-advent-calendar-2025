@@ -4,6 +4,8 @@ Hono Advent Calendar 2025 用のサンプルアプリケーション。
 
 イベント駆動アーキテクチャの学習を目的とした、リアルタイム注文管理システムです。
 
+![Demo](docs/demo.gif)
+
 ## 技術スタック
 
 - **Runtime**: Deno
