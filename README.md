@@ -127,11 +127,6 @@ http://localhost:5173/kitchen
 注文の状態更新とイベント記録を同一トランザクションで行い、Poller が非同期で NATS
 に配信。信頼性の高いイベント配信を実現。
 
-### CQRS (Command Query Responsibility Segregation)
-
-- **Command**: ドメインユースケース（注文作成、調理開始、配膳完了）
-- **Query**: DAO による直接クエリ（注文一覧取得）
-
 ### OpenAPI / Swagger UI
 
 `@hono/zod-openapi` を使用し、Zod スキーマから OpenAPI
